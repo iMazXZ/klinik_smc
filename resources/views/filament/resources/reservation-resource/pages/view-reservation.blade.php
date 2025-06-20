@@ -10,7 +10,7 @@
                 <div class="space-y-2">
                     <p><strong>Pasien:</strong> {{ $record->patient->name }}</p>
                     <p><strong>Dokter:</strong> {{ $record->doctor->name }}</p>
-                    <p><strong>Waktu:</strong> {{ $record->reservation_time->format('d M Y, H:i') }}</p>
+                    <p><strong>Waktu:</strong> {{ \Carbon\Carbon::parse($record->reservation_time)->format('d M Y, H:i') }}</p>
                     <p><strong>Status:</strong> <span class="text-sm font-semibold">{{ $record->status }}</span></p>
                     <p><strong>Keluhan:</strong></p>
                     <p class="text-sm text-gray-700 p-2 bg-gray-50 rounded-md">{{ $record->complaint }}</p>

@@ -4,18 +4,14 @@ namespace App\Filament\Resources\ReservationResource\Pages;
 
 use App\Filament\Resources\ReservationResource;
 use App\Models\Reservation;
-use Filament\Resources\Pages\Page;
+use Filament\Resources\Pages\ViewRecord;
 
-class ViewReservation extends Page
+class ViewReservation extends ViewRecord
 {
     protected static string $resource = ReservationResource::class;
 
-    protected static string $view = 'filament.resources.reservation-resource.pages.view-reservation';
-
-    public Reservation $record;
-
-    public function mount(int | string $record): void
+    public function getView(): string
     {
-        $this->record = Reservation::findOrFail($record);
+        return 'filament.resources.reservation-resource.pages.view-reservation';
     }
 }

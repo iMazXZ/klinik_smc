@@ -19,8 +19,6 @@ class Message extends Model
 
     public function sender()
     {
-        // 'sender_id' adalah nama kolom di tabel 'messages'
-        // yang terhubung ke 'id' di tabel 'users'.
         return $this->belongsTo(User::class, 'sender_id');
     }
 }

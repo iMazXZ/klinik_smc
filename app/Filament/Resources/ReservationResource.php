@@ -117,8 +117,8 @@ class ReservationResource extends Resource
         return [
             'index' => Pages\ListReservations::route('/'),
             'create' => Pages\CreateReservation::route('/create'),
+            'view' => Pages\ViewReservation::route('/{record}/view'),
             'edit' => Pages\EditReservation::route('/{record}/edit'),
-            'view' => Pages\ViewReservation::route('/{record}/view'), // Daftarkan halaman baru kita
         ];
     }
 }

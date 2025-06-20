@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('reservations', function (Blueprint $table) {
+            $table->id();
+            // Relasi ke tabel users (pasien)
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // Relasi ke tabel doctors
+            $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
+            $table->dateTime('reservation_time'); // Waktu pasti booking
+            $table->text('complaint'); // Keluhan pasien
+            $table->string('status')->default('pending'); // pending, confirmed, canceled
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('reservations');
+    }
+};

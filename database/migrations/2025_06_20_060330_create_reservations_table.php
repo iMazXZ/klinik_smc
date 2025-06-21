@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            // Relasi ke tabel users (pasien)
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            // Relasi ke tabel doctors
             $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
             $table->dateTime('reservation_time'); // Waktu pasti booking
             $table->text('complaint'); // Keluhan pasien

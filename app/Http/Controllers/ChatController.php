@@ -48,7 +48,8 @@ class ChatController extends Controller
         // 5. Siarkan event ke pemancar (Soketi)
         // ->load('sender') untuk menyertakan data pengirim (nama, dll) dalam siaran
         // ->toOthers() agar tidak mengirim siaran ke diri sendiri
-        broadcast(new ChatMessageSent($message->load('sender')))->toOthers();
+        // broadcast(new ChatMessageSent($message->load('sender')))->toOthers();
+        broadcast(new ChatMessageSent($message));
 
         // 6. Kembalikan pesan yang baru dibuat sebagai response JSON
         return response()->json($message);

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ChatController;
+use App\Livewire\MyReservations;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,7 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
     Route::get('/doctors/{doctor}', [DoctorController::class, 'show'])->name('doctors.show');
     Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
-    Route::get('/my-reservations', [ReservationController::class, 'myReservations'])->name('reservations.my');
+    Route::get('/my-reservations', MyReservations::class)->middleware(['auth'])->name('reservations.my');
     Route::post('/chat/send-message', [ChatController::class, 'sendMessage'])->name('chat.send');
 });
 

@@ -1,24 +1,27 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
-use App\Models\Reservation;
 
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
-});
+/*
+|--------------------------------------------------------------------------
+| Broadcast Channels
+|--------------------------------------------------------------------------
+|
+| Here you may register all of the event broadcasting channels that your
+| application supports. The given channel authorization callbacks are
+| used to check if an authenticated user can listen to the channel.
+|
+*/
 
-/**
- * Channel chat.{reservationId}
- * Memberi izin jika:
- * - User adalah admin
- * - ATAU user adalah pemilik dari reservasi (pasien)
- */
-Broadcast::channel('chat.{reservationId}', function ($user, $reservationId) {
-    $reservation = Reservation::find($reservationId);
+// Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
+//     return (int) $user->id === (int) $id;
+// });
 
-    if (!$reservation) {
-        return false; // hindari error jika reservasi tidak ditemukan
-    }
-
-    return $user->role === 'admin' || $user->id === $reservation->user_id;
-});
+// Channel untuk chat sudah tidak digunakan lagi, Anda bisa menghapus kode di bawah ini
+// Broadcast::channel('chat.{reservationId}', function ($user, $reservationId) {
+//     $reservation = \App\Models\Reservation::find($reservationId);
+//     if ($reservation) {
+//         return $user->id === $reservation->user_id || $user->id === $reservation->doctor->user_id;
+//     }
+//     return false;
+// });

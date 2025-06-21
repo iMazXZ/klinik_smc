@@ -1,47 +1,61 @@
-<div class="border border-gray-200 rounded-lg">
-    {{-- Header Kotak Chat --}}
-    <div class="bg-gray-50 p-3 border-b border-gray-200 rounded-t-lg">
-        <h3 class="font-semibold text-gray-800">
-            Chat untuk Reservasi #{{ $reservation->id }}
-        </h3>
-        <p class="text-sm text-gray-600">
-            dengan Dr. {{ $reservation->doctor->name }}
-        </p>
-    </div>
-
-    {{-- Area Pesan --}}
-    <div class="p-4 h-80 overflow-y-auto flex flex-col-reverse" id="message-box-{{ $reservation->id }}">
-        <div class="space-y-4">
-            @forelse($messages as $message)
-                {{-- FIX: Ubah semua akses objek -> menjadi akses array ['...'] --}}
-                <div class="flex {{ $message['sender_id'] == auth()->id() ? 'justify-end' : 'justify-start' }}">
-                    <div class="max-w-xs lg:max-w-md">
-                        <div class="px-3 py-2 rounded-lg {{ $message['sender_id'] == auth()->id() ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800' }}">
-                            <p class="text-sm">{{ $message['body'] }}</p>
-                        </div>
-                        <div class="text-xs text-gray-500 mt-1 {{ $message['sender_id'] == auth()->id() ? 'text-right' : 'text-left' }}">
-                            {{ $message['sender']['name'] }} &bull; {{ \Carbon\Carbon::parse($message['created_at'])->format('H:i') }}
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <p class="text-center text-gray-500">Belum ada pesan. Mulailah percakapan!</p>
-            @endforelse
+<div class="w-full h-full flex flex-col"
+    {{-- Refresh komponen setiap 2.5 detik untuk mengambil pesan baru --}}
+    wire:poll.2500ms 
+    x-data="{
+        conversationElement: document.getElementById('conversation')
+    }"
+    x-init="
+        // Langsung scroll ke bawah saat komponen pertama kali dimuat
+        $nextTick(() => conversationElement.scrollTop = conversationElement.scrollHeight);
+    "
+    {{-- Listener untuk event 'scroll-bottom' dari backend --}}
+    @scroll-bottom.window="$nextTick(() => conversationElement.scrollTop = conversationElement.scrollHeight);"
+>
+    {{-- Header Chat --}}
+    <header class="w-full shrink-0 flex p-4 items-center justify-between border-b bg-white">
+        <div class="flex items-center space-x-4">
+            <div class="flex flex-col">
+                <h1 class="text-lg font-bold">
+                    {{-- Menampilkan nama lawan bicara --}}
+                    @if(auth()->user()->is_admin || auth()->user()->id === $selectedReservation->doctor->user_id)
+                        {{ $selectedReservation->user?->name ?? 'Pasien Dihapus' }}
+                    @else
+                        {{ $selectedReservation->doctor?->name ?? 'Dokter Dihapus' }}
+                    @endif
+                </h1>
+                @if(auth()->user()->is_admin || auth()->user()->id !== $selectedReservation->doctor->user_id)
+                    <p class="text-sm text-gray-500">{{ $selectedReservation->doctor?->speciality }}</p>
+                @endif
+            </div>
         </div>
-    </div>
+    </header>
 
-    {{-- Form Kirim Pesan --}}
-    <div class="p-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
-        <form wire:submit.prevent="sendMessage" class="flex items-center space-x-2">
+    {{-- Body Chat (Daftar Pesan) --}}
+    <main id="conversation" class="flex-1 p-4 space-y-4 overflow-y-auto bg-gray-50">
+        @foreach ($messages as $msg)
+            <div class="flex {{ $msg['user_id'] === auth()->id() ? 'justify-end' : 'justify-start' }}">
+                <div class="max-w-xs md:max-w-md p-3 rounded-lg {{ $msg['user_id'] === auth()->id() ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black' }}">
+                    <p class="text-sm">{{ $msg['message'] }}</p>
+                    <p class="text-xs mt-1 text-right {{ $msg['user_id'] === auth()->id() ? 'text-blue-200' : 'text-gray-500' }}">
+                        {{ \Carbon\Carbon::parse($msg['created_at'])->format('H:i') }}
+                    </p>
+                </div>
+            </div>
+        @endforeach
+    </main>
+
+    {{-- Footer/Input Pesan --}}
+    <footer class="w-full shrink-0 p-4 border-t bg-white">
+        <form wire:submit="sendMessage" class="flex items-center">
             <input type="text"
-                   wire:model="newMessage"
-                   autocomplete="off"
-                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                   placeholder="Ketik pesan Anda..."
-                   required>
-            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
-                Kirim
+                   wire:model="message"
+                   placeholder="Tulis pesan Anda..."
+                   class="w-full px-4 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   autocomplete="off">
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 disabled:bg-blue-300" wire:loading.attr="disabled">
+                <span wire:loading.remove>Kirim</span>
+                <span wire:loading>...</span>
             </button>
         </form>
-    </div>
+    </footer>
 </div>

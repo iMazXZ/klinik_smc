@@ -1,34 +1,39 @@
 <x-filament-panels::page>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {{-- Kolom Kiri: Detail Reservasi --}}
-        <div class="lg:col-span-1">
-            <x-filament::section>
-                <x-slot name="heading">
-                    Detail Reservasi
-                </x-slot>
-
-                <div class="space-y-2">
-                    <p><strong>Pasien:</strong> {{ $record->patient->name }}</p>
-                    <p><strong>Dokter:</strong> {{ $record->doctor->name }}</p>
-                    <p><strong>Waktu:</strong> {{ \Carbon\Carbon::parse($record->reservation_time)->format('d M Y, H:i') }}</p>
-                    <p><strong>Status:</strong> <span class="text-sm font-semibold">{{ $record->status }}</span></p>
-                    <p><strong>Keluhan:</strong></p>
-                    <p class="text-sm text-gray-700 p-2 bg-gray-50 rounded-md">{{ $record->complaint }}</p>
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Detail Reservasi</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Nama Pasien</p>
+                        {{-- PERUBAHAN DI SINI --}}
+                        <p class="text-lg font-semibold">{{ $record->user?->name ?? 'Pengguna Dihapus' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Dokter</p>
+                        {{-- Kita juga bisa terapkan di sini untuk keamanan --}}
+                        <p class="text-lg font-semibold">{{ $record->doctor?->name ?? 'Dokter Tidak Ditemukan' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Tanggal</p>
+                        <p class="text-lg font-semibold">{{ $record->date }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Waktu</p>
+                        <p class="text-lg font-semibold">{{ $record->time }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Status</p>
+                        <span class="px-2 py-1 text-sm rounded-full {{ $record->status == 'scheduled' ? 'bg-blue-200 text-blue-800' : 'bg-green-200 text-green-800' }}">
+                            {{ ucfirst($record->status) }}
+                        </span>
+                    </div>
                 </div>
-            </x-filament::section>
+            </div>
         </div>
 
-        {{-- Kolom Kanan: Kotak Chat --}}
-        <div class="lg:col-span-2">
-            <x-filament::section>
-                <x-slot name="heading">
-                    Percakapan
-                </x-slot>
-
-                {{-- Di sinilah keajaibannya: kita panggil komponen Livewire yang sama --}}
-                @livewire('chat-box', ['reservation' => $record])
-
-            </x-filament::section>
+        <div class="mt-8 bg-white shadow-md rounded-lg h-[70vh]">
+            @livewire('chat-box', ['reservationId' => $record->id])
         </div>
     </div>
 </x-filament-panels::page>
